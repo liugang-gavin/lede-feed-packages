@@ -1,0 +1,496 @@
+From dfb1f09c2f8072e2769d52b7c86085554191f823 Mon Sep 17 00:00:00 2001
+From: Guo Feng-B41466 <feng.guo@freescale.com>
+Date: Tue, 15 Aug 2017 15:49:15 +0800
+Subject: [PATCH 1/3] add packages for IoT demo
+
+---
+ lang/perl/files/aarch64.config           | 19 ++++++++++++
+ lang/python/python-awsiot/Makefile       | 49 +++++++++++++++++++++++++++++++
+ lang/python/python-monotonic/Makefile    | 49 +++++++++++++++++++++++++++++++
+ lang/python/python-pahomqtt/Makefile     | 50 ++++++++++++++++++++++++++++++++
+ lang/python/python-pocketsphinx/Makefile | 49 +++++++++++++++++++++++++++++++
+ lang/python/python-pyalsaaudio/Makefile  | 49 +++++++++++++++++++++++++++++++
+ lang/python/python-pyaudio/Makefile      | 49 +++++++++++++++++++++++++++++++
+ lang/python/python-requests/Makefile     | 49 +++++++++++++++++++++++++++++++
+ lang/python/python-webrtcvad/Makefile    | 50 ++++++++++++++++++++++++++++++++
+ 9 files changed, 413 insertions(+)
+ create mode 100644 lang/perl/files/aarch64.config
+ create mode 100644 lang/python/python-awsiot/Makefile
+ create mode 100644 lang/python/python-monotonic/Makefile
+ create mode 100644 lang/python/python-pahomqtt/Makefile
+ create mode 100644 lang/python/python-pocketsphinx/Makefile
+ create mode 100644 lang/python/python-pyalsaaudio/Makefile
+ create mode 100644 lang/python/python-pyaudio/Makefile
+ create mode 100644 lang/python/python-requests/Makefile
+ create mode 100644 lang/python/python-webrtcvad/Makefile
+
+diff --git a/lang/perl/files/aarch64.config b/lang/perl/files/aarch64.config
+new file mode 100644
+index 0000000..206d571
+--- /dev/null
++++ b/lang/perl/files/aarch64.config
+@@ -0,0 +1,19 @@
++owrt:arch=arm
++owrt:bits=64
++owrt:endian=little
++
++ccsymbols='__ARM_ARCH_3__=1'
++cppccsymbols=''
++cppsymbols='__ELF__=1 _FILE_OFFSET_BITS=64 __GLIBC__=2 __GLIBC_MINOR__=2 __GNUC__=3 __GNUC_MINOR__=4 __GNU_LIBRARY__=6 _LARGEFILE_SOURCE=1 _POSIX_C_SOURCE=199506L _POSIX_SOURCE=1 __STDC__=1 __USE_BSD=1 __USE_FILE_OFFSET64=1 __USE_LARGEFILE=1 __USE_MISC=1 __USE_POSIX=1 __USE_POSIX199309=1 __USE_POSIX199506=1 __USE_POSIX2=1 __USE_SVID=1 linux=1 __linux=1 __linux__=1 unix=1 __unix=1 __unix__=1'
++d_casti32='define'
++d_modflproto='undef'
++doublekind='3'
++fpossize='20'
++longdblkind='0'
++need_va_copy='undef'
++quadkind='3'
++
++owrt:sig_count='64'
++owrt:sigs='ZERO HUP INT QUIT ILL TRAP ABRT BUS FPE KILL USR1 SEGV USR2 PIPE ALRM TERM STKFLT CHLD CONT STOP TSTP TTIN TTOU URG XCPU XFSZ VTALRM PROF WINCH IO PWR SYS'
++owrt:sig_name_extra='IOT CLD POLL UNUSED'
++owrt:sig_num_extra='6 17 29 31'
+diff --git a/lang/python/python-awsiot/Makefile b/lang/python/python-awsiot/Makefile
+new file mode 100644
+index 0000000..a08ba30
+--- /dev/null
++++ b/lang/python/python-awsiot/Makefile
+@@ -0,0 +1,49 @@
++#
++# Copyright (C) 2007-2016 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=python-awsiot
++PKG_VERSION:=1.1.1
++PKG_RELEASE:=1
++PKG_LICENSE:=Apache Software License
++
++PKG_SOURCE:=AWSIoTPythonSDK-$(PKG_VERSION).tar.gz
++PKG_BUILD_DIR:=$(BUILD_DIR)/AWSIoTPythonSDK-$(PKG_VERSION)/
++PKG_SOURCE_URL:=https://pypi.python.org/packages/eb/45/6cfe2580fa0e64ce17065cc3ba1c9965c20358f6028c485da3165ae79b9a/
++PKG_MD5SUM:=470a37dfe48fb9e448a1dce41b9abc97
++PKG_BUILD_DEPENDS:=python python-setuptools
++
++include $(INCLUDE_DIR)/package.mk
++$(call include_mk, python-package.mk)
++
++define Package/python-awsiot
++  SUBMENU:=Python
++  SECTION:=lang
++  CATEGORY:=Languages
++  MAINTAINER:=Feng Guo <feng.guo@nxp.com>
++  TITLE:=SDK for connecting to AWS IoT using Python.
++  URL:=https://github.com/aws/aws-iot-device-sdk-python.git
++  DEPENDS:=+python
++endef
++
++define Package/python-awsiot/description
++  The AWS IoT Device SDK for Python allows developers to write Python script to use their devices to access the AWS IoT platform through MQTT or MQTT over the WebSocket protocol.
++endef
++
++define Build/Compile
++	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
++endef
++
++define Package/python-awsiot/install
++	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
++	$(CP) \
++	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
++	    $(1)$(PYTHON_PKG_DIR)
++endef
++
++$(eval $(call BuildPackage,python-awsiot))
+diff --git a/lang/python/python-monotonic/Makefile b/lang/python/python-monotonic/Makefile
+new file mode 100644
+index 0000000..1afe9d5
+--- /dev/null
++++ b/lang/python/python-monotonic/Makefile
+@@ -0,0 +1,49 @@
++#
++# Copyright (C) 2007-2016 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=python-monotonic
++PKG_VERSION:=1.2
++PKG_RELEASE:=1
++PKG_LICENSE:=Apache Software License
++
++PKG_SOURCE:=monotonic-$(PKG_VERSION).tar.gz
++PKG_BUILD_DIR:=$(BUILD_DIR)/monotonic-$(PKG_VERSION)/
++PKG_SOURCE_URL:=https://pypi.python.org/packages/08/35/9e06c881c41962d7367e9466724beda2b1101439b149b7ff708d708890de/
++PKG_MD5SUM:=d14c93aabc3d6af25ef086b032b123cf
++PKG_BUILD_DEPENDS:=python python-setuptools
++
++include $(INCLUDE_DIR)/package.mk
++$(call include_mk, python-package.mk)
++
++define Package/python-monotonic
++  SUBMENU:=Python
++  SECTION:=lang
++  CATEGORY:=Languages
++  MAINTAINER:=Feng Guo <feng.guo@nxp.com>
++  TITLE:=An implementation of time.monotonic()
++  URL:=https://github.com/atdt/monotonic
++  DEPENDS:=+python
++endef
++
++define Package/python-monotonic/description
++  This module provides a monotonic() function which returns the value (in fractional seconds) of a clock which never goes backwards.
++endef
++
++define Build/Compile
++	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
++endef
++
++define Package/python-monotonic/install
++	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
++	$(CP) \
++	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
++	    $(1)$(PYTHON_PKG_DIR)
++endef
++
++$(eval $(call BuildPackage,python-monotonic))
+diff --git a/lang/python/python-pahomqtt/Makefile b/lang/python/python-pahomqtt/Makefile
+new file mode 100644
+index 0000000..0287910
+--- /dev/null
++++ b/lang/python/python-pahomqtt/Makefile
+@@ -0,0 +1,50 @@
++#
++# Copyright (C) 2007-2016 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=python-pahomqtt
++PKG_VERSION:=1.3.0
++PKG_RELEASE:=1
++PKG_LICENSE:=Eclipse Public License v1.0 / Eclipse Distribution License v1.0
++
++PKG_SOURCE:=paho-mqtt-$(PKG_VERSION).tar.gz
++PKG_BUILD_DIR:=$(BUILD_DIR)/paho-mqtt-$(PKG_VERSION)/
++PKG_SOURCE_URL:=https://pypi.python.org/packages/33/7f/3ce1ffebaa0343d509aac003800b305d821e89dac3c11666f92e12feca14
++PKG_MD5SUM:=b9338236e2836e8579ef140956189cc4
++PKG_BUILD_DEPENDS:=python python-setuptools
++
++include $(INCLUDE_DIR)/package.mk
++$(call include_mk, python-package.mk)
++
++define Package/python-pahomqtt
++  SUBMENU:=Python
++  SECTION:=lang
++  CATEGORY:=Languages
++  MAINTAINER:=Feng Guo <feng.guo@nxp.com>
++  TITLE:=MQTT version 3.1.1 client class
++  URL:=http://mqtt.org/tag/paho
++  DEPENDS:=+python
++endef
++
++define Package/python-pahomqtt/description
++	The MQTT protocol is a machine-to-machine (M2M) ”Internet of Things” connectivity protocol.
++endef
++
++define Build/Compile
++	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
++endef
++
++define Package/python-pahomqtt/install
++	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
++	$(CP) \
++	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
++	    $(1)$(PYTHON_PKG_DIR)
++endef
++
++$(eval $(call BuildPackage,python-pahomqtt))
++
+diff --git a/lang/python/python-pocketsphinx/Makefile b/lang/python/python-pocketsphinx/Makefile
+new file mode 100644
+index 0000000..5fce7bd
+--- /dev/null
++++ b/lang/python/python-pocketsphinx/Makefile
+@@ -0,0 +1,49 @@
++#
++# Copyright (C) 2007-2016 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=python-pocketsphinx
++PKG_VERSION:=0.1.3
++PKG_RELEASE:=1
++PKG_LICENSE:=BSD
++
++PKG_SOURCE:=pocketsphinx-$(PKG_VERSION).tar.gz
++PKG_BUILD_DIR:=$(BUILD_DIR)/pocketsphinx-$(PKG_VERSION)/
++PKG_SOURCE_URL:=https://pypi.python.org/packages/a0/4e/70c500da7558d2a8e67fd8cfd33f5a4b90faf7163d7e4023fa989a89902a/
++PKG_MD5SUM:=e8401e131f7a193ea49ad77aa6c846e3
++PKG_BUILD_DEPENDS:=python python-setuptools pulseaudio-daemon
++
++include $(INCLUDE_DIR)/package.mk
++$(call include_mk, python-package.mk)
++
++define Package/python-pocketsphinx
++  SUBMENU:=Python
++  SECTION:=lang
++  CATEGORY:=Languages
++  MAINTAINER:=Feng Guo <feng.guo@nxp.com>
++  TITLE:=Python interface to PocketSphinx libraries
++  URL:=https://github.com/bambocher/pocketsphinx-python
++  DEPENDS:=+python +pulseaudio-daemon
++endef
++
++define Package/python-pocketsphinx/description
++  Python interface to CMU SphinxBase and PocketSphinx libraries
++endef
++
++define Build/Compile
++	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
++endef
++
++define Package/python-pocketsphinx/install
++	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
++	$(CP) \
++	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
++	    $(1)$(PYTHON_PKG_DIR)
++endef
++
++$(eval $(call BuildPackage,python-pocketsphinx))
+diff --git a/lang/python/python-pyalsaaudio/Makefile b/lang/python/python-pyalsaaudio/Makefile
+new file mode 100644
+index 0000000..5de1571
+--- /dev/null
++++ b/lang/python/python-pyalsaaudio/Makefile
+@@ -0,0 +1,49 @@
++#
++# Copyright (C) 2007-2016 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=python-pyalsaaudio
++PKG_VERSION:=0.8.4
++PKG_RELEASE:=1
++PKG_LICENSE:=Python Software Foundation License
++
++PKG_SOURCE:=pyalsaaudio-$(PKG_VERSION).tar.gz
++PKG_BUILD_DIR:=$(BUILD_DIR)/pyalsaaudio-$(PKG_VERSION)/
++PKG_SOURCE_URL:=https://pypi.python.org/packages/52/b6/44871791929d9d7e11325af0b7be711388dfeeab17147988f044a41a6d83/
++PKG_MD5SUM:=b46f69561bc85fc52e698b2440ca251e
++PKG_BUILD_DEPENDS:=python python-setuptools alsa-lib
++
++include $(INCLUDE_DIR)/package.mk
++$(call include_mk, python-package.mk)
++
++define Package/python-pyalsaaudio
++  SUBMENU:=Python
++  SECTION:=lang
++  CATEGORY:=Languages
++  MAINTAINER:=Feng Guo <feng.guo@nxp.com>
++  TITLE:=ALSA bindings
++  URL:=http://larsimmisch.github.io/pyalsaaudio/
++  DEPENDS:=+python +alsa-lib
++endef
++
++define Package/python-pyalsaaudio/description
++  This package contains wrappers for accessing the ALSA API from Python. It is fairly complete for PCM devices and Mixer access.
++endef
++
++define Build/Compile
++	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
++endef
++
++define Package/python-pyalsaaudio/install
++	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
++	$(CP) \
++	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
++	    $(1)$(PYTHON_PKG_DIR)
++endef
++
++$(eval $(call BuildPackage,python-pyalsaaudio))
+diff --git a/lang/python/python-pyaudio/Makefile b/lang/python/python-pyaudio/Makefile
+new file mode 100644
+index 0000000..1aacb10
+--- /dev/null
++++ b/lang/python/python-pyaudio/Makefile
+@@ -0,0 +1,49 @@
++#
++# Copyright (C) 2007-2016 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=python-pyaudio
++PKG_VERSION:=0.2.10
++PKG_RELEASE:=1
++PKG_LICENSE:=MIT
++
++PKG_SOURCE:=PyAudio-$(PKG_VERSION).tar.gz
++PKG_BUILD_DIR:=$(BUILD_DIR)/PyAudio-$(PKG_VERSION)/
++PKG_SOURCE_URL:=https://pypi.python.org/packages/44/39/f3b9b16d32cc8588fa06bb2e813cea35363f5502117cd6cc7f619b556d9f/
++PKG_MD5SUM:=b65354d997fa00a9166f8dbcb83075e6
++PKG_BUILD_DEPENDS:=python python-setuptools portaudio
++
++include $(INCLUDE_DIR)/package.mk
++$(call include_mk, python-package.mk)
++
++define Package/python-pyaudio
++  SUBMENU:=Python
++  SECTION:=lang
++  CATEGORY:=Languages
++  MAINTAINER:=Feng Guo <feng.guo@nxp.com>
++  TITLE:=Python Bindings for PortAudio
++  URL:=http://people.csail.mit.edu/hubert/pyaudio/
++  DEPENDS:=+python +portaudio
++endef
++
++define Package/python-pyaudio/description
++  Bindings for PortAudio v19, the cross-platform audio input/output stream library.
++endef
++
++define Build/Compile
++	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
++endef
++
++define Package/python-pyaudio/install
++	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
++	$(CP) \
++	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
++	    $(1)$(PYTHON_PKG_DIR)
++endef
++
++$(eval $(call BuildPackage,python-pyaudio))
+diff --git a/lang/python/python-requests/Makefile b/lang/python/python-requests/Makefile
+new file mode 100644
+index 0000000..7338159
+--- /dev/null
++++ b/lang/python/python-requests/Makefile
+@@ -0,0 +1,49 @@
++#
++# Copyright (C) 2007-2016 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=python-requests
++PKG_VERSION:=2.13.0
++PKG_RELEASE:=1
++PKG_LICENSE:=Apache 2.0
++
++PKG_SOURCE:=requests-$(PKG_VERSION).tar.gz
++PKG_BUILD_DIR:=$(BUILD_DIR)/requests-$(PKG_VERSION)/
++PKG_SOURCE_URL:=https://pypi.python.org/packages/16/09/37b69de7c924d318e51ece1c4ceb679bf93be9d05973bb30c35babd596e2
++PKG_MD5SUM:=921ec6b48f2ddafc8bb6160957baf444
++PKG_BUILD_DEPENDS:=python python-setuptools
++
++include $(INCLUDE_DIR)/package.mk
++$(call include_mk, python-package.mk)
++
++define Package/python-requests
++  SUBMENU:=Python
++  SECTION:=lang
++  CATEGORY:=Languages
++  MAINTAINER:=Feng Guo <feng.guo@nxp.com>
++  TITLE:=Non-GMO HTTP library for Python
++  URL:=http://www.python-requests.org/en/master/
++  DEPENDS:=+python
++endef
++
++define Package/python-requests/description
++  Requests is the only Non-GMO HTTP library for Python, safe for human consumption.
++endef
++
++define Build/Compile
++	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
++endef
++
++define Package/python-requests/install
++	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
++	$(CP) \
++	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
++	    $(1)$(PYTHON_PKG_DIR)
++endef
++
++$(eval $(call BuildPackage,python-requests))
+diff --git a/lang/python/python-webrtcvad/Makefile b/lang/python/python-webrtcvad/Makefile
+new file mode 100644
+index 0000000..0481a83
+--- /dev/null
++++ b/lang/python/python-webrtcvad/Makefile
+@@ -0,0 +1,50 @@
++#
++# Copyright (C) 2007-2016 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=python-webrtcvad
++PKG_VERSION:=2.0.10
++PKG_RELEASE:=1
++PKG_LICENSE:=MIT
++
++PKG_SOURCE:=webrtcvad-$(PKG_VERSION).tar.gz
++PKG_BUILD_DIR:=$(BUILD_DIR)/webrtcvad-$(PKG_VERSION)/
++PKG_SOURCE_URL:=https://pypi.python.org/packages/89/34/e2de2d97f3288512b9ea56f92e7452f8207eb5a0096500badf9dfd48f5e6/
++PKG_MD5SUM:=213d2848aeebbbd22485d4ad630b5fdb
++PKG_BUILD_DEPENDS:=python python-setuptools
++
++include $(INCLUDE_DIR)/package.mk
++$(call include_mk, python-package.mk)
++
++define Package/python-webrtcvad
++  SUBMENU:=Python
++  SECTION:=lang
++  CATEGORY:=Languages
++  MAINTAINER:=Feng Guo <feng.guo@nxp.com>
++  TITLE:=Google WebRTC Voice Activity Detector (VAD)
++  URL:=https://github.com/wiseman/py-webrtcvad
++  DEPENDS:=+python
++endef
++
++define Package/python-webrtcvad/description
++  A VAD classifies a piece of audio data as being voiced or unvoiced. It can be useful for telephony and speech recognition.
++endef
++
++define Build/Compile
++	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
++endef
++
++define Package/python-webrtcvad/install
++	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
++	$(CP) \
++	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
++	    $(1)$(PYTHON_PKG_DIR)
++endef
++
++$(eval $(call BuildPackage,python-webrtcvad))
++
+-- 
+2.7.4
+
